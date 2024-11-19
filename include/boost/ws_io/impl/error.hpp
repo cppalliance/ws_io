@@ -47,13 +47,8 @@ struct BOOST_SYMBOL_VISIBLE
         int, char*, std::size_t
             ) const noexcept override;
 
-    BOOST_WS_IO_DECL
-    system::error_condition
-        default_error_condition(
-            int code) const noexcept override;
-
     BOOST_SYSTEM_CONSTEXPR error_cat_type() noexcept
-        : error_category(0xdfd293d97e2afb40)
+        : error_category(0x3742a4ebac416b0a)
     {
     }
 };

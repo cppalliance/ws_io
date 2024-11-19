@@ -9,3 +9,23 @@
 
 // Test that header file is self-contained.
 #include <boost/ws_io/error.hpp>
+
+#include "test_suite.hpp"
+
+namespace boost {
+namespace ws_io {
+
+struct error_test
+{
+    void
+    run()
+    {
+    }
+};
+
+TEST_SUITE(
+    error_test,
+    "boost.ws_io.error");
+
+} // ws_io
+} // boost

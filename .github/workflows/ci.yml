@@ -8,7 +8,7 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
-# Official repository: https://github.com/CPPAlliance/ws_io/
+# Official repository: https://github.com/cppalliance/ws_io/
 #
 
 name: CI
@@ -155,11 +155,10 @@ jobs:
             version: "*"
             cxx: "clang++"
             cc: "clang"
-            runs-on: "macos-11"
+            runs-on: "macos-15"
             b2-toolset: "clang"
             is-latest: true
-            is-earliest: true
-            name: "Apple-Clang"
+            name: "Apple-Clang (macOS 15)"
             build-type: "Release"
             build-cmake: true
 
@@ -167,10 +166,10 @@ jobs:
             version: "*"
             cxx: "clang++"
             cc: "clang"
-            runs-on: "macos-11"
+            runs-on: "macos-15"
             b2-toolset: "clang"
             is-latest: true
-            name: "Apple-Clang (ubsan)"
+            name: "Apple-Clang (macOS 15, ubsan)"
             build-type: "RelWithDebInfo"
             ubsan: true
 
@@ -178,12 +177,30 @@ jobs:
             version: "*"
             cxx: "clang++"
             cc: "clang"
-            runs-on: "macos-11"
+            runs-on: "macos-15"
             b2-toolset: "clang"
             is-latest: true
-            name: "Apple-Clang (asan)"
+            name: "Apple-Clang (macOS 15, asan)"
             build-type: "RelWithDebInfo"
             asan: true
+
+          - compiler: "apple-clang"
+            version: "*"
+            cxx: "clang++"
+            cc: "clang"
+            runs-on: "macos-14"
+            b2-toolset: "clang"
+            name: "Apple-Clang (macOS 14)"
+            build-type: "Release"
+
+          - compiler: "apple-clang"
+            version: "*"
+            cxx: "clang++"
+            cc: "clang"
+            runs-on: "macos-13"
+            b2-toolset: "clang"
+            name: "Apple-Clang (macOS 13)"
+            build-type: "Release"
 
           # Linux compilers
           #
@@ -200,7 +217,7 @@ jobs:
             is-latest: true
             name: "GCC 13: C++17-20"
             build-type: "Release"
-            install: "cmake zlib1g-dev"
+            install: "zlib1g-dev"
             build-cmake: true
 
           - compiler: "gcc"
@@ -216,7 +233,7 @@ jobs:
             name: "GCC 13: C++17-20 (x86)"
             x86: true
             build-type: "Release"
-            install: "cmake gcc-13-multilib g++-13-multilib zlib1g-dev zlib1g-dev:i386 libssl-dev:i386"
+            install: "gcc-13-multilib g++-13-multilib zlib1g-dev zlib1g-dev:i386"
 
           - compiler: "gcc"
             version: "13"
@@ -233,7 +250,7 @@ jobs:
             build-type: "Debug"
             cxxflags: "--coverage -fprofile-arcs -ftest-coverage"
             ccflags: "--coverage -fprofile-arcs -ftest-coverage"
-            install: "cmake lcov zlib1g-dev wget unzip"
+            install: "lcov zlib1g-dev wget unzip"
 
           - compiler: "gcc"
             version: "13"
@@ -248,7 +265,7 @@ jobs:
             name: "GCC 13: C++17-20 (shared)"
             shared: true
             build-type: "Release"
-            install: "cmake zlib1g-dev"
+            install: "zlib1g-dev"
             build-cmake: true
 
           - compiler: "gcc"
@@ -265,7 +282,7 @@ jobs:
             shared: true
             x86: true
             build-type: "Release"
-            install: "cmake gcc-13-multilib g++-13-multilib zlib1g-dev zlib1g-dev:i386 libssl-dev:i386"
+            install: "gcc-13-multilib g++-13-multilib zlib1g-dev zlib1g-dev:i386"
             build-cmake: true
 
           - compiler: "gcc"
@@ -281,7 +298,7 @@ jobs:
             name: "GCC 13: C++17-20 (asan)"
             asan: true
             build-type: "RelWithDebInfo"
-            install: "cmake zlib1g-dev"
+            install: "zlib1g-dev"
 
           - compiler: "gcc"
             version: "13"
@@ -297,7 +314,7 @@ jobs:
             asan: true
             x86: true
             build-type: "RelWithDebInfo"
-            install: "cmake gcc-13-multilib g++-13-multilib zlib1g-dev zlib1g-dev:i386 libssl-dev:i386"
+            install: "gcc-13-multilib g++-13-multilib zlib1g-dev zlib1g-dev:i386"
 
           - compiler: "gcc"
             version: "13"
@@ -312,7 +329,7 @@ jobs:
             name: "GCC 13: C++17-20 (ubsan)"
             ubsan: true
             build-type: "RelWithDebInfo"
-            install: "cmake zlib1g-dev"
+            install: "zlib1g-dev"
 
           - compiler: "gcc"
             version: "13"
@@ -328,7 +345,7 @@ jobs:
             ubsan: true
             x86: true
             build-type: "RelWithDebInfo"
-            install: "cmake gcc-13-multilib g++-13-multilib zlib1g-dev zlib1g-dev:i386 libssl-dev:i386"
+            install: "gcc-13-multilib g++-13-multilib zlib1g-dev zlib1g-dev:i386"
 
           - compiler: "gcc"
             version: "12"
@@ -439,7 +456,7 @@ jobs:
             is-latest: true
             name: "Clang 17: C++17-20"
             build-type: "Release"
-            install: "zlib1g-dev cmake"
+            install: "zlib1g-dev"
             build-cmake: true
 
           - compiler: "clang"
@@ -455,7 +472,7 @@ jobs:
             name: "Clang 17: C++17-20 (x86)"
             x86: true
             build-type: "Release"
-            install: "cmake gcc-multilib g++-multilib zlib1g-dev zlib1g-dev:i386 libssl-dev:i386"
+            install: "gcc-multilib g++-multilib zlib1g-dev zlib1g-dev:i386"
 
           - compiler: "clang"
             version: "17"
@@ -472,7 +489,7 @@ jobs:
             build-type: "Release"
             cxxflags: "-ftime-trace"
             ccflags: "-ftime-trace"
-            install: "cmake zlib1g-dev wget unzip"
+            install: "zlib1g-dev wget unzip"
 
           - compiler: "clang"
             version: "17"
@@ -487,7 +504,7 @@ jobs:
             name: "Clang 17: C++17-20 (asan)"
             asan: true
             build-type: "RelWithDebInfo"
-            install: "cmake zlib1g-dev"
+            install: "zlib1g-dev"
 
           - compiler: "clang"
             version: "17"
@@ -503,7 +520,7 @@ jobs:
             asan: true
             x86: true
             build-type: "RelWithDebInfo"
-            install: "cmake gcc-multilib g++-multilib zlib1g-dev zlib1g-dev:i386 libssl-dev:i386"
+            install: "gcc-multilib g++-multilib zlib1g-dev zlib1g-dev:i386"
 
           - compiler: "clang"
             version: "17"
@@ -518,7 +535,7 @@ jobs:
             name: "Clang 17: C++17-20 (ubsan)"
             ubsan: true
             build-type: "RelWithDebInfo"
-            install: "cmake zlib1g-dev"
+            install: "zlib1g-dev"
 
           - compiler: "clang"
             version: "17"
@@ -534,7 +551,7 @@ jobs:
             ubsan: true
             x86: true
             build-type: "RelWithDebInfo"
-            install: "cmake gcc-multilib g++-multilib zlib1g-dev zlib1g-dev:i386 libssl-dev:i386"
+            install: "gcc-multilib g++-multilib zlib1g-dev zlib1g-dev:i386"
 
           - compiler: "clang"
             version: "16"
@@ -544,7 +561,6 @@ jobs:
             cc: "clang-16"
             runs-on: "ubuntu-latest"
             container: "ubuntu:23.04"
-            install: "cmake"
             b2-toolset: "clang"
             name: "Clang 16: C++17-20"
             build-type: "Release"
@@ -714,6 +730,10 @@ jobs:
     timeout-minutes: 120
 
     steps:
+      - name: Enable Node 16
+        run: |
+          echo "ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true" >> $GITHUB_ENV
+
       - name: Clone Boost.WS.Io
         uses: actions/checkout@v3
         with:
@@ -1029,31 +1049,127 @@ jobs:
           tag-pattern: 'boost-.*\..*\..*'
 
   antora:
-    name: Antora Docs
     needs: [ runner-selection ]
-    runs-on: ${{ fromJSON(needs.runner-selection.outputs.labelmatrix)['ubuntu-latest'] }}
+    strategy:
+      matrix:
+        include:
+          # - { name: Windows, os: windows-latest }
+          - { name: Ubuntu, os: ubuntu-latest }
+          - { name: MacOS, os: macos-latest }
+    name: Antora Docs (${{ matrix.name }})
+    runs-on: ${{ fromJSON(needs.runner-selection.outputs.labelmatrix)[matrix.os] }}
+    defaults:
+      run:
+        shell: bash
     steps:
-      - name: Clone WS.Proto
-        uses: actions/checkout@v3
+      - name: Install packages
+        uses: alandefreitas/cpp-actions/package-install@v1.8.7
+        with:
+          apt-get: git cmake
 
-      - uses: actions/setup-node@v3
+      - name: Clone Boost.WS.Io
+        uses: actions/checkout@v3
+        with:
+          path: ws-io-root
+
+      - name: Clone Boost.WS.Proto
+        uses: actions/checkout@v3
+        with:
+          repository: cppalliance/ws_proto
+          path: ws-proto-root
+          ref: develop
+
+      - name: Clone Boost.Http.Proto
+        uses: actions/checkout@v3
+        with:
+          repository: cppalliance/http_proto
+          path: http-proto-root
+          ref: develop
+
+      - name: Clone Boost.Buffers
+        uses: actions/checkout@v3
+        with:
+          path: buffers-root
+          repository: cppalliance/buffers
+          ref: develop
+
+      - name: Clone Boost
+        uses: alandefreitas/cpp-actions/boost-clone@v1.8.2
+        id: boost-clone
+        with:
+          branch: ${{ (github.ref_name == 'master' && github.ref_name) || 'develop' }}
+          boost-dir: boost-source
+          scan-modules-dir: ws-io-root
+          scan-modules-ignore: ws_io
+
+      - name: Patch Boost
+        id: patch
+        shell: bash
+        run: |
+          set -xe
+          pwd
+          ls
+          ls -lah boost-source
+
+          # Identify boost module being tested
+          module=${GITHUB_REPOSITORY#*/}
+          echo "module=$module" >> $GITHUB_OUTPUT
+
+          # Identify GitHub workspace root
+          workspace_root=$(echo "$GITHUB_WORKSPACE" | sed 's/\\/\//g')
+          echo -E "workspace_root=$workspace_root" >> $GITHUB_OUTPUT
+
+          # Remove module from boost-source
+          rm -r "boost-source/libs/$module" || true
+
+          # Copy cached boost-source to an isolated boost-root
+          cp -r boost-source boost-root
+
+          # Set boost-root output
+          cd boost-root
+          boost_root="$(pwd)"
+          boost_root=$(echo "$boost_root" | sed 's/\\/\//g')
+          echo -E "boost_root=$boost_root" >> $GITHUB_OUTPUT
+
+          # Patch boost-root with workspace module
+          cp -r "$workspace_root"/ws-io-root "libs/$module"
+          cp -r "$workspace_root"/buffers-root libs/buffers
+          cp -r "$workspace_root"/http-proto-root libs/http_proto
+          cp -r "$workspace_root"/ws-proto-root libs/ws_proto
+
+          python3 tools/boostdep/depinst/depinst.py buffers
+          python3 tools/boostdep/depinst/depinst.py http_proto
+          python3 tools/boostdep/depinst/depinst.py ws_proto
+
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      - name: Setup C++
-        uses: alandefreitas/cpp-actions/setup-cpp@v1.8.2
-        id: setup-cpp
-        with:
-          compiler: clang
-          version: 17
+      - name: Setup Ninja
+        if: runner.os == 'Windows'
+        uses: seanmiddleditch/gha-setup-ninja@v5
 
       - name: Build Antora Docs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          git config --global --add safe.directory "$(pwd)"
+          
+          BOOST_SRC_DIR="$(pwd)/boost-root"
+          export BOOST_SRC_DIR
+          cd boost-root/libs/ws_io
+          
           cd doc
           bash ./build_antora.sh
+          
+          # Antora returns zero even if it fails, so we check if the site directory exists
+          if [ ! -d "build/site" ]; then
+              echo "Antora build failed"
+              exit 1
+          fi
 
       - name: Create Antora Docs Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: antora-docs
+          name: antora-docs-${{ matrix.name }}
           path: doc/build/site

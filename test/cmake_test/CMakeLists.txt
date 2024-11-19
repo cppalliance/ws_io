@@ -25,6 +25,7 @@ else()
 
     asio
     assert
+    buffers
     config
     http_proto
     system
@@ -36,33 +37,27 @@ else()
 
     align
     context
-    coroutine
     date_time
-    buffers
-    container_hash
-    core
-    mp11
-    static_assert
-    type_traits
-    winapi
     variant2
-    optional
-    describe
+    winapi
+    core
+    static_assert
+    mp11
     pool
     predef
     smart_ptr
-    exception
-    move
-    utility
     algorithm
     io
     lexical_cast
     numeric/conversion
     range
     tokenizer
+    type_traits
+    utility
     array
     bind
     concept_check
+    exception
     function
     iterator
     mpl
@@ -70,11 +65,15 @@ else()
     tuple
     unordered
     container
-    integer
     conversion
     preprocessor
+    integer
+    container_hash
     detail
+    optional
     intrusive
+    move
+    describe
     function_types
     fusion
     functional
