@@ -10,6 +10,8 @@
 // Test that header file is self-contained.
 #include <boost/ws_io/error.hpp>
 
+#include <boost/beast/version.hpp>
+
 #include "test_suite.hpp"
 
 namespace boost {

@@ -25,6 +25,9 @@ add_executable(boost_ws_io_tests ${PFILES} ${EXTRAFILES})
 target_include_directories(boost_ws_io_tests PRIVATE . ../../../url/extra)
 target_link_libraries(boost_ws_io_tests PRIVATE
     OpenSSL::SSL
-    Boost::ws_io)
+    boost_beast
+    boost_ws_io
+    )
 
 add_test(NAME boost_ws_io_tests COMMAND boost_ws_io_tests)
+add_dependencies(tests boost_ws_io_tests)
