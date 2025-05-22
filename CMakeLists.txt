@@ -60,6 +60,7 @@ set(BOOST_WS_IO_DEPENDENCIES
     Boost::system
     Boost::url
     Boost::ws_proto
+    Boost::http_io
     )
 
 foreach (BOOST_WS_IO_DEPENDENCY ${BOOST_WS_IO_DEPENDENCIES})
@@ -131,13 +132,15 @@ endif ()
 #-------------------------------------------------
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-file(GLOB_RECURSE BOOST_WS_IO_HEADERS CONFIGURE_DEPENDS include/boost/*.hpp include/boost/*.natvis)
+file(GLOB_RECURSE BOOST_WS_IO_HEADERS CONFIGURE_DEPENDS include/boost/ws_io/*.hpp include/boost/ws_io/*.natvis)
 file(GLOB_RECURSE BOOST_WS_IO_SOURCES CONFIGURE_DEPENDS src/*.cpp src/*.hpp)
+file(GLOB_RECURSE BOOST_WS_PROTO_SOURCES CONFIGURE_DEPENDS src/*.cpp src/*.hpp)
 
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/boost PREFIX "" FILES ${BOOST_WS_IO_HEADERS})
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src PREFIX "ws_io" FILES ${BOOST_WS_IO_SOURCES})
+source_group("" FILES "include/boost/ws_io.hpp" "build/Jamfile")
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/boost/ws_io PREFIX "include" FILES ${BOOST_WS_IO_HEADERS})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src PREFIX "src" FILES ${BOOST_WS_IO_SOURCES})
 
-add_library(boost_ws_io ${BOOST_WS_IO_HEADERS} ${BOOST_WS_IO_SOURCES})
+add_library(boost_ws_io include/boost/ws_io.hpp build/Jamfile ${BOOST_WS_IO_HEADERS} ${BOOST_WS_IO_SOURCES})
 add_library(Boost::ws_io ALIAS boost_ws_io)
 target_compile_features(boost_ws_io PUBLIC cxx_constexpr)
 target_include_directories(boost_ws_io PUBLIC "${PROJECT_SOURCE_DIR}/include")

@@ -43,8 +43,10 @@ lib boost_ws_io
    : ws_io_sources
    : requirements
      <library>/boost//ws_proto
+     <library>/boost//http_io
    : usage-requirements
      <library>/boost//ws_proto
+     <library>/boost//http_io
    ;
 
 boost-install boost_ws_io ;
