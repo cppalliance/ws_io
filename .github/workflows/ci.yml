@@ -821,6 +821,13 @@ jobs:
         with:
           path: ws-io-root
 
+      - name: Clone Boost.Http.Io
+        uses: actions/checkout@v3
+        with:
+          repository: cppalliance/http_io
+          path: http-io-root
+          ref: develop
+
       - name: Clone Boost.Ws.Proto
         uses: actions/checkout@v3
         with:
@@ -871,11 +878,13 @@ jobs:
           modules-exclude-paths: ''
           scan-modules-dir: |
             ws-io-root
+            http-io-root
             ws-proto-root
             http-proto-root
             buffers-root
           scan-modules-ignore: |
             ws_io
+            http_io
             ws_proto
             http_proto
             buffers
@@ -944,6 +953,7 @@ jobs:
 
           # Patch boost-root with workspace module
           cp -r "$workspace_root"/ws-io-root "libs/$module"
+          cp -r "$workspace_root"/http-io-root libs/http_io
           cp -r "$workspace_root"/buffers-root libs/buffers
           cp -r "$workspace_root"/http-proto-root libs/http_proto
           cp -r "$workspace_root"/ws-proto-root libs/ws_proto
@@ -1160,6 +1170,13 @@ jobs:
         with:
           path: ws-io-root
 
+      - name: Clone Boost.Http.Io
+        uses: actions/checkout@v3
+        with:
+          repository: cppalliance/http_io
+          path: http-io-root
+          ref: develop
+
       - name: Clone Boost.WS.Proto
         uses: actions/checkout@v3
         with:
@@ -1191,11 +1208,13 @@ jobs:
           modules-exclude-paths: ''
           scan-modules-dir: |
             ws-io-root
+            http-io-root
             ws-proto-root
             http-proto-root
             buffers-root
           scan-modules-ignore: |
             ws_io
+            http_io
             ws_proto
             http_proto
             buffers
@@ -1231,6 +1250,7 @@ jobs:
 
           # Patch boost-root with workspace module
           cp -r "$workspace_root"/ws-io-root "libs/$module"
+          cp -r "$workspace_root"/http-io-root libs/http_io
           cp -r "$workspace_root"/buffers-root libs/buffers
           cp -r "$workspace_root"/http-proto-root libs/http_proto
           cp -r "$workspace_root"/ws-proto-root libs/ws_proto
