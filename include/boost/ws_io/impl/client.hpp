@@ -38,6 +38,8 @@ public:
         : cs_(cs)
         , h_(std::forward<Handler_>(h))
     {
+        (void)host;
+        (void)target;
     }
 
 };
@@ -106,6 +108,9 @@ async_handshake(
     Decorator decorator,
     HandshakeHandler&& handler)
 {
+    (void)host;
+    (void)target;
+    (void)decorator;
     return asio::async_initiate<
         HandshakeHandler,
         void(system::error_code, http_proto::response_view)>(
