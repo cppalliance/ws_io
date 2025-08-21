@@ -29,6 +29,7 @@ else()
     config
     http_proto
     system
+    rts
     throw_exception
     url
     ws_proto
