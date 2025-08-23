@@ -110,9 +110,7 @@ public:
         ConstBufferSequence const& messages);
 
 private:
-    template<class Handler>
     class handshake_op;
-    struct run_handshake_op;
 
     AsyncStream stream_;
     rts::context& ctx_;
