@@ -11,8 +11,8 @@
 #define BOOST_WS_IO_CLIENT_HPP
 
 #include <boost/ws_io/detail/config.hpp>
+#include <boost/ws_io/peer.hpp>
 #include <boost/ws_proto/client.hpp>
-#include <boost/rts/context_fwd.hpp>
 #include <boost/http_proto/response_view.hpp>
 #include <boost/http_proto/request.hpp>
 #include <boost/asio/async_result.hpp>
@@ -41,45 +41,6 @@ struct frame
 struct read_results
 {
     span<buffers::const_buffer> messages;
-};
-
-//------------------------------------------------
-
-template<
-    class AsyncStream>
-class peer
-{
-protected:
-    AsyncStream stream_;
-    rts::context& ctx_;
-
-public:
-    template<class AsyncStream_>
-    peer(
-        AsyncStream_&& stream,
-        rts::context& ctx)
-        : stream_(std::forward<AsyncStream_>(stream))
-        , ctx_(ctx)
-    {
-    }
-
-    /** The type of the underlying stream
-    */
-    using stream_type = typename
-        std::remove_reference<AsyncStream>::type;
-
-    /** The type of executor used by the stream
-    */
-    using executor_type = decltype(
-        std::declval<stream_type>().get_executor());
-
-    /** Return the underlying stream
-    */
-    AsyncStream&
-    next_layer() noexcept
-    {
-        return stream_;
-    }
 };
 
 //------------------------------------------------
