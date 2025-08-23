@@ -50,12 +50,15 @@ template<
 class client
 {
 public:
-    using stream_type = AsyncStream;
-    using executor_type = decltype(
-        std::declval<AsyncStream&>().get_executor());
+    using stream_type = typename
+        std::remove_reference<AsyncStream>::type;
 
+    using executor_type = decltype(
+        std::declval<stream_type>().get_executor());
+
+    template<class AsyncStream_>
     client(
-        AsyncStream& stream,
+        AsyncStream_&& stream,
         rts::context& ctx);
 
     AsyncStream&
@@ -111,7 +114,7 @@ private:
     class handshake_op;
     struct run_handshake_op;
 
-    AsyncStream& stream_;
+    AsyncStream stream_;
     rts::context& ctx_;
 };
 

@@ -12,7 +12,10 @@
 
 #include <boost/asio/async_result.hpp>
 #include <boost/http_proto/response_view.hpp>
+#include <boost/ws_proto/handshake.hpp>
+#include <boost/asio/compose.hpp>
 #include <boost/asio/coroutine.hpp>
+#include <boost/asio/write.hpp>
 
 namespace boost {
 namespace ws_io {
@@ -27,6 +30,7 @@ class client<AsyncStream>::
 {
     client<AsyncStream>& cs_;
     Handler h_;
+    http_proto::request req_;
 
 public:
     template<class Handler_>
@@ -37,11 +41,36 @@ public:
         core::string_view target)
         : cs_(cs)
         , h_(std::forward<Handler_>(h))
+        , req_(ws_proto::make_upgrade(host, target))
     {
-        (void)host;
-        (void)target;
     }
 
+    template<class Self>
+    void
+    operator()(
+        Self& self,
+        system::error_code ec = {},
+        std::size_t bytes_transferred = 0)
+    {
+        BOOST_ASIO_CORO_REENTER(*this)
+        {
+            BOOST_ASIO_CORO_YIELD
+            {
+                BOOST_ASIO_HANDLER_LOCATION((
+                    __FILE__, __LINE__,
+                    "async_write"));
+                asio::async_write(
+                    cs_.next_layer(),
+                    asio::buffer(req_.buffer()),
+                    std::move(self));
+            }
+            if(ec.failed())
+                goto upcall;
+            // fallthrough
+        upcall:
+            self.complete(ec);
+        }
+    }
 };
 
 //------------------------------------------------
@@ -83,11 +112,12 @@ struct client<AsyncStream>::
 //------------------------------------------------
 
 template<class AsyncStream>
+template<class AsyncStream_>
 client<AsyncStream>::
 client(
-    AsyncStream& stream,
+    AsyncStream_&& stream,
     rts::context& ctx)
-    : stream_(stream)
+    : stream_(std::forward<AsyncStream_>(stream))
     , ctx_(ctx)
 {
 }
@@ -111,6 +141,7 @@ async_handshake(
     (void)host;
     (void)target;
     (void)decorator;
+#if 0
     return asio::async_initiate<
         HandshakeHandler,
         void(system::error_code, http_proto::response_view)>(
@@ -118,6 +149,15 @@ async_handshake(
             handler,
             host,
             target);
+#else
+    return asio::async_compose<
+        HandshakeHandler,
+        void(system::error_code, http_proto::response_view)>(
+            handshake_op<HandshakeHandler>(
+                std::forward<HandshakeHandler>(handler),
+                host,
+                target));
+#endif
 }
 
 } // ws_io

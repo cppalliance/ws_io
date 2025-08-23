@@ -21,21 +21,24 @@ struct client_test
     void
     run()
     {
+        asio::io_context ioc;
         rts::context ctx;
         http_proto::parser::config_base cfg;
         http_proto::install_parser_service(ctx, cfg);
 
-        test::server srv;
-        auto sock = srv.connect();
-        client<test::socket_type> cs(sock, ctx);
+        test::session srv(ioc.get_executor());
+        client<test::session::socket_type> cs(
+            srv.release_client(), ctx);
         cs.async_handshake(
             "localhost",
             "/",
             [](http_proto::request&)
             {
             },
-            test::success_handler());
-        //srv.run();
+            [](system::error_code, http_proto::response_view)
+            {
+            });
+        ioc.run();
     }
 };
 

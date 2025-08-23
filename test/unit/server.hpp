@@ -8,35 +8,12 @@
 //
 
 #include <boost/asio/ip/tcp.hpp>
+#include <boost/beast/websocket/stream.hpp>
 #include "test_suite.hpp"
 
 namespace boost {
 namespace ws_io {
 namespace test {
-
-//------------------------------------------------
-
-using socket_type =
-    asio::basic_stream_socket<
-        asio::ip::tcp,
-        asio::io_context::executor_type>;
-
-class server
-{
-public:
-    server();
-    ~server();
-
-    socket_type
-    connect();
-
-    void
-    run();
-
-private:
-    struct impl;
-    impl* impl_;
-};
 
 //------------------------------------------------
 
@@ -50,6 +27,128 @@ struct success_handler
         pass = BOOST_TEST(! ec.failed());
     }
 };
+
+//------------------------------------------------
+
+template<class MF, class T, class... Args0>
+struct bind_wrapper
+{
+    MF mf_;
+    T this_;
+    //std::tuple<Args0...> args0_;
+
+    template<class... Args>
+    void
+    operator()(Args&&... args) const
+    {
+        (this_.*mf_)(std::forward<Args>(args)...);
+    }
+};
+
+template<class MF, class Arg0, class... Argn>
+bind_wrapper<MF, Arg0, Argn...>
+bind_front(
+    MF&& mf,
+    Arg0* arg0,
+    Argn&&...)
+{
+    return bind_wrapper<MF, Arg0, Argn...>{ mf, arg0 };
+}
+
+//------------------------------------------------
+
+/** Connect two TCP sockets together.
+*/
+template<class Executor>
+bool
+connect(
+    asio::basic_stream_socket<asio::ip::tcp, Executor>& s1,
+    asio::basic_stream_socket<asio::ip::tcp, Executor>& s2)
+
+{
+    BOOST_ASSERT(s1.get_executor() == s2.get_executor());
+    try
+    {
+        asio::basic_socket_acceptor<
+            asio::ip::tcp, Executor> a(s1.get_executor());
+        auto ep = asio::ip::tcp::endpoint(
+            asio::ip::make_address_v4("127.0.0.1"), 0);
+        a.open(ep.protocol());
+        a.set_option(
+            asio::socket_base::reuse_address(true));
+        a.bind(ep);
+        a.listen(0);
+        ep = a.local_endpoint();
+        a.async_accept(s2, success_handler());
+        s1.async_connect(ep, success_handler());
+        s1.get_executor().context().restart();
+        s1.get_executor().context().run();
+        if(! BOOST_TEST_EQ(s1.remote_endpoint(), s2.local_endpoint()))
+            return false;
+        if(! BOOST_TEST_EQ(s2.remote_endpoint(), s1.local_endpoint()))
+            return false;
+    }
+    catch(std::exception const&)
+    {
+        BOOST_TEST_FAIL();
+        return false;
+    }
+
+    return true;
+}
+
+//------------------------------------------------
+
+class session
+{
+public:
+    using socket_type =
+        asio::basic_stream_socket<
+            asio::ip::tcp,
+            asio::io_context::executor_type>;
+    using executor_type = typename
+        socket_type::executor_type;
+
+private:
+    beast::websocket::stream<socket_type> ws_;
+    socket_type client_socket_;
+
+public:
+    template<class Executor>
+    explicit
+    session(Executor const& ex)
+        : ws_(ex)
+        , client_socket_(ex)
+    {
+        connect(ws_.next_layer(), client_socket_);
+        ws_.async_accept(
+            [&](system::error_code ec)
+            {
+                on_accept(ec);
+            });
+    }
+
+    socket_type
+    release_client()
+    {
+        return std::move(client_socket_);
+    }
+
+    void
+    on_accept(
+        system::error_code ec)
+    {
+        if(! BOOST_TEST(! ec.failed()))
+        {
+            BOOST_ERROR(ec.message().data());
+            return;
+        }
+        BOOST_TEST_PASS();
+
+    }
+};
+
+//------------------------------------------------
 
 } // test
 } // ws_io
