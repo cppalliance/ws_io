@@ -48,3 +48,41 @@ TEST_SUITE(
 
 } // ws_io
 } // boost
+
+/*
+
+ "sizing the app"
+
+struct worker
+{
+    asio::ip::tcp::socket sock_;
+    http_io::client ht_; // parser and serializer
+    ws_io::client ws_;
+
+    // storage for all operations
+    char* buf_;
+    std::size_t size_;
+};
+
+Websocket server program:
+
+1. configure and apply http settings
+2. configure and apply websocket settings
+3. allocate max(http-needed, ws-needed)
+4. construct parser
+    - gets half of the allocation
+5. construct serializer
+    - gets the other half of the allocation
+
+(receive upgrade request)
+
+6. construct ws_io::server
+    - get the full allocation
+
+ws_io::client, ws_io::server
+
+http_io::client, http_io::server
+
+
+
+*/

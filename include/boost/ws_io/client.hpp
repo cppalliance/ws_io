@@ -43,28 +43,62 @@ struct read_results
     span<buffers::const_buffer> messages;
 };
 
-/** A websocket client session
-*/
+//------------------------------------------------
+
 template<
     class AsyncStream>
-class client
+class peer
 {
+protected:
+    AsyncStream stream_;
+    rts::context& ctx_;
+
 public:
+    template<class AsyncStream_>
+    peer(
+        AsyncStream_&& stream,
+        rts::context& ctx)
+        : stream_(std::forward<AsyncStream_>(stream))
+        , ctx_(ctx)
+    {
+    }
+
+    /** The type of the underlying stream
+    */
     using stream_type = typename
         std::remove_reference<AsyncStream>::type;
 
+    /** The type of executor used by the stream
+    */
     using executor_type = decltype(
         std::declval<stream_type>().get_executor());
 
-    template<class AsyncStream_>
-    client(
-        AsyncStream_&& stream,
-        rts::context& ctx);
-
+    /** Return the underlying stream
+    */
     AsyncStream&
     next_layer() noexcept
     {
         return stream_;
+    }
+};
+
+//------------------------------------------------
+
+/** A websocket client session
+*/
+template<
+    class AsyncStream>
+class client : public peer<AsyncStream>
+{
+public:
+    template<class AsyncStream_>
+    client(
+        AsyncStream_&& stream,
+        rts::context& ctx)
+        : peer<AsyncStream>(
+            std::forward<AsyncStream_>(stream),
+            ctx)
+    {
     }
 
     /** Perform the websocket handshake
@@ -111,9 +145,6 @@ public:
 
 private:
     class handshake_op;
-
-    AsyncStream stream_;
-    rts::context& ctx_;
 };
 
 } // ws_io

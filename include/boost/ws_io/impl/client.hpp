@@ -72,17 +72,6 @@ public:
 //------------------------------------------------
 
 template<class AsyncStream>
-template<class AsyncStream_>
-client<AsyncStream>::
-client(
-    AsyncStream_&& stream,
-    rts::context& ctx)
-    : stream_(std::forward<AsyncStream_>(stream))
-    , ctx_(ctx)
-{
-}
-
-template<class AsyncStream>
 template<
     BOOST_ASIO_COMPLETION_TOKEN_FOR(void(
         ::boost::system::error_code,
@@ -98,15 +87,13 @@ async_handshake(
     Decorator decorator,
     HandshakeHandler&& handler)
 {
-    (void)host;
-    (void)target;
     (void)decorator;
     return asio::async_compose<
         HandshakeHandler,
         void(system::error_code, http_proto::response_view)>(
         handshake_op( *this, host, target ),
         handler,
-        stream_); // or *this
+        this->stream_); // or *this
 }
 
 } // ws_io
