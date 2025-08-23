@@ -83,6 +83,7 @@ connect(
         s1.async_connect(ep, success_handler());
         s1.get_executor().context().restart();
         s1.get_executor().context().run();
+        s1.get_executor().context().restart();
         if(! BOOST_TEST_EQ(s1.remote_endpoint(), s2.local_endpoint()))
             return false;
         if(! BOOST_TEST_EQ(s2.remote_endpoint(), s1.local_endpoint()))

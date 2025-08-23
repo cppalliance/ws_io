@@ -38,7 +38,7 @@ struct client_test
             [](system::error_code, http_proto::response_view)
             {
             });
-        ioc.run();
+        BOOST_TEST_NO_THROW(ioc.run());
     }
 };
 

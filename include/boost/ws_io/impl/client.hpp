@@ -11,11 +11,14 @@
 #define BOOST_WS_IO_IMPL_CLIENT_HPP
 
 #include <boost/asio/async_result.hpp>
-#include <boost/http_proto/response_view.hpp>
+#include <boost/http_proto/response_parser.hpp>
+#include <boost/http_io/read.hpp>
 #include <boost/ws_proto/handshake.hpp>
 #include <boost/asio/compose.hpp>
 #include <boost/asio/coroutine.hpp>
 #include <boost/asio/write.hpp>
+
+#include <memory>
 
 namespace boost {
 namespace ws_io {
@@ -29,6 +32,7 @@ class client<AsyncStream>::
 {
     client<AsyncStream>& cs_;
     http_proto::request req_;
+    std::unique_ptr<http_proto::response_parser> pr_;
 
 public:
     handshake_op(
@@ -37,7 +41,10 @@ public:
         core::string_view target)
         : cs_(cs)
         , req_(ws_proto::make_upgrade(host, target))
+        , pr_(new http_proto::response_parser(cs_.ctx_))
     {
+        pr_->reset();
+        pr_->start();
     }
 
     template<class Self>
@@ -48,6 +55,7 @@ public:
         std::size_t bytes_transferred = 0)
     {
         (void)bytes_transferred;
+        http_proto::response_view res;
         BOOST_ASIO_CORO_REENTER(*this)
         {
             BOOST_ASIO_CORO_YIELD
@@ -62,9 +70,33 @@ public:
             }
             if(ec.failed())
                 goto upcall;
-            // fallthrough
+            BOOST_ASIO_CORO_YIELD
+            {
+                BOOST_ASIO_HANDLER_LOCATION((
+                    __FILE__, __LINE__,
+                    "async_read_header"));
+                http_io::async_read_header(
+                    cs_.next_layer(),
+                    *pr_,
+                    std::move(self));
+            }
+            if(ec.failed())
+                goto upcall;
+            BOOST_ASIO_CORO_YIELD
+            {
+                BOOST_ASIO_HANDLER_LOCATION((
+                    __FILE__, __LINE__,
+                    "async_read"));
+                http_io::async_read(
+                    cs_.next_layer(),
+                    *pr_,
+                    std::move(self));
+            }
+            if(ec.failed())
+                goto upcall;
+            res = pr_->get();
         upcall:
-            self.complete(ec, {});
+            self.complete(ec, res);
         }
     }
 };
