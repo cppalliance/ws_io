@@ -104,6 +104,44 @@ public:
 //------------------------------------------------
 
 template<class AsyncStream>
+template<class ConstBufferSequence>
+class client<AsyncStream>::
+    write_op
+    : public asio::coroutine
+{
+    client<AsyncStream>& cs_;
+    ConstBufferSequence bs_;
+    std::size_t n_ = 0;
+
+public:
+    template<class ConstBufferSequence_>
+    write_op(
+        client<AsyncStream>& cs,
+        ConstBufferSequence_ const& bs)
+        : cs_(cs)
+        , bs_(std::forward<ConstBufferSequence_>(bs))
+    {
+    }
+
+    template<class Self>
+    void
+    operator()(
+        Self& self,
+        system::error_code ec = {},
+        std::size_t bytes_transferred = 0)
+    {
+        n_ += bytes_transferred;
+        BOOST_ASIO_CORO_REENTER(*this)
+        {
+        upcall:
+            self.complete(ec, n_);
+        }
+    }
+};
+
+//------------------------------------------------
+
+template<class AsyncStream>
 template<
     BOOST_ASIO_COMPLETION_TOKEN_FOR(void(
         ::boost::system::error_code,
@@ -125,7 +163,30 @@ async_handshake(
         void(system::error_code, http_proto::response_view)>(
         handshake_op(*this, host, target),
         handler,
-        this->stream_); // or *this
+        this->stream_); // or *this?
+}
+
+template<class AsyncStream>
+template<
+    class ConstBufferSequence,
+    BOOST_ASIO_COMPLETION_TOKEN_FOR(void(
+        ::boost::system::error_code,
+        std::size_t)) WriteHandler
+>
+BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler, void(
+    ::boost::system::error_code,
+    std::size_t))
+client<AsyncStream>::
+async_write(
+    ConstBufferSequence const& data,
+    WriteHandler&& handler)
+{
+    return asio::async_compose<
+        WriteHandler,
+        void(system::error_code, std::size_t)>(
+        write_op(*this, data),
+        handler,
+        this->stream_); // or *this?
 }
 
 } // ws_io

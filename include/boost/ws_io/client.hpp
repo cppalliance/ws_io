@@ -68,7 +68,7 @@ public:
         BOOST_ASIO_COMPLETION_TOKEN_FOR(void(
             ::boost::system::error_code,
             ::boost::http_proto::response_view)) HandshakeHandler =
-            asio::default_completion_token_t<executor_type>,
+                asio::default_completion_token_t<executor_type>,
         class Decorator = null_decorator
     >
     BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(HandshakeHandler, void(
@@ -89,7 +89,7 @@ public:
         BOOST_ASIO_COMPLETION_TOKEN_FOR(void(
             ::boost::system::error_code,
             std::size_t)) WriteHandler =
-            asio::default_completion_token_t<executor_type>
+                asio::default_completion_token_t<executor_type>
     >
     BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler, void(
         ::boost::system::error_code,
@@ -102,7 +102,7 @@ public:
 
 private:
     class handshake_op;
-    class write_op;
+    template<class> class write_op;
 };
 
 } // ws_io
