@@ -32,10 +32,10 @@ struct client_test
         cs.async_handshake(
             "localhost",
             "/",
-            [](http_proto::request&)
+            [](system::error_code, http_proto::response_view)
             {
             },
-            [](system::error_code, http_proto::response_view)
+            [](http_proto::request&)
             {
             });
         BOOST_TEST_NO_THROW(ioc.run());

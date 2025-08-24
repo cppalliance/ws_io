@@ -77,35 +77,32 @@ public:
     async_handshake(
         core::string_view host,
         core::string_view target,
-        Decorator decorator = {},
         HandshakeHandler&& handler =
-            asio::default_completion_token_t<executor_type>{}
+            asio::default_completion_token_t<executor_type>{},
+        Decorator decorator = {}
         );
 
     /** Write a complete message
     */
-    template<class ConstBufferSequence>
-    auto
+    template<
+        class ConstBufferSequence,
+        BOOST_ASIO_COMPLETION_TOKEN_FOR(void(
+            ::boost::system::error_code,
+            std::size_t)) WriteHandler =
+            asio::default_completion_token_t<executor_type>
+    >
+    BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler, void(
+        ::boost::system::error_code,
+        std::size_t))
     async_write(
-        ConstBufferSequence const& message);
-
-    /** Write part of a message
-    */
-    template<class ConstBufferSequence>
-    auto
-    async_write_some(
         ConstBufferSequence const& data,
-        bool fin);
-
-    /** Write multiple messages
-    */
-    template<class ConstBufferSequence>
-    auto
-    async_writev(
-        ConstBufferSequence const& messages);
+        WriteHandler&& handler =
+            asio::default_completion_token_t<executor_type>{}
+        );
 
 private:
     class handshake_op;
+    class write_op;
 };
 
 } // ws_io

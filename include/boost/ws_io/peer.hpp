@@ -35,6 +35,9 @@ protected:
     AsyncStream stream_;
     rts::context& ctx_;
 
+    bool is_reading_ = false;
+    bool is_writing_ = false;
+
 public:
     template<class AsyncStream_>
     peer(

@@ -116,14 +116,14 @@ client<AsyncStream>::
 async_handshake(
     core::string_view host,
     core::string_view target,
-    Decorator decorator,
-    HandshakeHandler&& handler)
+    HandshakeHandler&& handler,
+    Decorator decorator)
 {
     (void)decorator;
     return asio::async_compose<
         HandshakeHandler,
         void(system::error_code, http_proto::response_view)>(
-        handshake_op( *this, host, target ),
+        handshake_op(*this, host, target),
         handler,
         this->stream_); // or *this
 }

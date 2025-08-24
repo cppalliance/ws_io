@@ -8,6 +8,7 @@
 //
 
 #include <boost/asio/ip/tcp.hpp>
+#include <boost/beast/core/flat_buffer.hpp>
 #include <boost/beast/websocket/stream.hpp>
 #include "test_suite.hpp"
 
@@ -113,6 +114,7 @@ public:
 private:
     beast::websocket::stream<socket_type> ws_;
     socket_type client_socket_;
+    beast::flat_buffer buf_;
 
 public:
     template<class Executor>
@@ -145,7 +147,63 @@ public:
             return;
         }
         BOOST_TEST_PASS();
+        do_read();
+    }
 
+    void
+    do_read()
+    {
+        ws_.async_read(buf_,
+            [&](system::error_code ec,
+                std::size_t bytes_transferred)
+            {
+                on_read(ec, bytes_transferred);
+            });
+    }
+
+    void
+    on_read(
+        system::error_code ec,
+        std::size_t bytes_transferred)
+    {
+        (void)bytes_transferred;
+        if(ec == beast::websocket::error::closed)
+        {
+            BOOST_TEST_PASS();
+            return;
+        }
+        if(! BOOST_TEST(! ec.failed()))
+        {
+            BOOST_ERROR(ec.message().data());
+            return;
+        }
+        BOOST_TEST_PASS();
+        ws_.async_write(buf_.data(),
+            [&](system::error_code ec,
+                std::size_t bytes_transferred)
+            {
+                on_write(ec, bytes_transferred);
+            });
+    }
+
+    void
+    on_write(
+        system::error_code ec,
+        std::size_t bytes_transferred)
+    {
+        (void)bytes_transferred;
+        if(ec == beast::websocket::error::closed)
+        {
+            BOOST_TEST_PASS();
+            return;
+        }
+        if(! BOOST_TEST(! ec.failed()))
+        {
+            BOOST_ERROR(ec.message().data());
+            return;
+        }
+        buf_.clear();
+        do_read();
     }
 };
 
