@@ -10,7 +10,9 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/beast/core/flat_buffer.hpp>
 #include <boost/beast/websocket/stream.hpp>
+#include <boost/asio/cancel_after.hpp>
 #include "test_suite.hpp"
+#include <chrono>
 
 namespace boost {
 namespace ws_io {
@@ -153,12 +155,15 @@ public:
     void
     do_read()
     {
-        ws_.async_read(buf_,
-            [&](system::error_code ec,
-                std::size_t bytes_transferred)
-            {
-                on_read(ec, bytes_transferred);
-            });
+        ws_.async_read(
+            buf_,
+            asio::cancel_after(
+                std::chrono::seconds(1),
+                [&](system::error_code ec,
+                    std::size_t bytes_transferred)
+                {
+                    on_read(ec, bytes_transferred);
+                }));
     }
 
     void

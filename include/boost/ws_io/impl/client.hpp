@@ -17,6 +17,7 @@
 #include <boost/asio/compose.hpp>
 #include <boost/asio/coroutine.hpp>
 #include <boost/asio/write.hpp>
+#include <boost/buffers/size.hpp>
 
 #include <memory>
 
@@ -111,7 +112,8 @@ class client<AsyncStream>::
 {
     client<AsyncStream>& cs_;
     ConstBufferSequence bs_;
-    std::size_t n_ = 0;
+    std::size_t n_;
+    std::size_t tot_ = 0;
 
 public:
     template<class ConstBufferSequence_>
@@ -119,7 +121,8 @@ public:
         client<AsyncStream>& cs,
         ConstBufferSequence_ const& bs)
         : cs_(cs)
-        , bs_(std::forward<ConstBufferSequence_>(bs))
+        , bs_(bs)
+        , n_(buffers::size(bs_))
     {
     }
 
@@ -130,11 +133,11 @@ public:
         system::error_code ec = {},
         std::size_t bytes_transferred = 0)
     {
-        n_ += bytes_transferred;
+        tot_ += bytes_transferred;
         BOOST_ASIO_CORO_REENTER(*this)
         {
         upcall:
-            self.complete(ec, n_);
+            self.complete(ec, tot_);
         }
     }
 };
