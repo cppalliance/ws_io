@@ -32,17 +32,6 @@ struct null_decorator
     }
 };
 
-struct frame
-{
-    ws_proto::frame_type kind;
-    buffers::const_buffer data;
-};
-
-struct read_results
-{
-    span<buffers::const_buffer> messages;
-};
-
 //------------------------------------------------
 
 /** A websocket client session
@@ -66,14 +55,14 @@ public:
     */
     template<
         BOOST_ASIO_COMPLETION_TOKEN_FOR(void(
-            ::boost::system::error_code,
-            ::boost::http_proto::response_view)) HandshakeHandler =
+            system::error_code,
+            http_proto::response_view)) HandshakeHandler =
                 asio::default_completion_token_t<executor_type>,
         class Decorator = null_decorator
     >
     BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(HandshakeHandler, void(
-        ::boost::system::error_code,
-        ::boost::http_proto::response_view))
+        system::error_code,
+        http_proto::response_view))
     async_handshake(
         core::string_view host,
         core::string_view target,
@@ -87,12 +76,12 @@ public:
     template<
         class ConstBufferSequence,
         BOOST_ASIO_COMPLETION_TOKEN_FOR(void(
-            ::boost::system::error_code,
+            system::error_code,
             std::size_t)) WriteHandler =
                 asio::default_completion_token_t<executor_type>
     >
     BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler, void(
-        ::boost::system::error_code,
+        system::error_code,
         std::size_t))
     async_write(
         ConstBufferSequence const& data,

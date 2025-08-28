@@ -124,6 +124,15 @@ public:
         , bs_(bs)
         , n_(buffers::size(bs_))
     {
+        ws_proto::frame_header fh;
+        fh.len = n_;
+        fh.key=0xdeadbeef;
+        fh.op = ws_proto::opcode::binary;
+        fh.mask = 1;
+        fh.rsv1 = false;
+        fh.rsv2 = false;
+        fh.rsv3 = false;
+        cs.sr_.append(fh);
     }
 
     template<class Self>
@@ -136,7 +145,7 @@ public:
         tot_ += bytes_transferred;
         BOOST_ASIO_CORO_REENTER(*this)
         {
-        upcall:
+        //upcall:
             self.complete(ec, tot_);
         }
     }
@@ -187,7 +196,7 @@ async_write(
     return asio::async_compose<
         WriteHandler,
         void(system::error_code, std::size_t)>(
-        write_op(*this, data),
+        write_op<ConstBufferSequence>(*this, data),
         handler,
         this->stream_); // or *this?
 }

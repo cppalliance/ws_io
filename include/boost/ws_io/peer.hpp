@@ -12,9 +12,9 @@
 
 #include <boost/ws_io/detail/config.hpp>
 #include <boost/rts/context_fwd.hpp>
+#include <boost/ws_proto/serializer.hpp>
 #include <type_traits>
 #if 0
-#include <boost/ws_proto/client.hpp>
 #include <boost/http_proto/response_view.hpp>
 #include <boost/http_proto/request.hpp>
 #include <boost/asio/async_result.hpp>
@@ -34,6 +34,7 @@ class peer
 protected:
     AsyncStream stream_;
     rts::context& ctx_;
+    ws_proto::serializer sr_;
 
     bool is_reading_ = false;
     bool is_writing_ = false;

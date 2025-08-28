@@ -10,6 +10,7 @@
 #include <boost/ws_io/client.hpp>
 #include <boost/rts/context.hpp>
 #include <boost/http_proto/parser.hpp>
+#include <boost/buffers/make_buffer.hpp>
 #include <boost/asio/spawn.hpp>
 #include "test/unit/server.hpp"
 #include "test_suite.hpp"
@@ -20,6 +21,30 @@ namespace ws_io {
 
 struct client_test
 {
+    using client_type =
+        client<test::session::socket_type>;
+
+    void test1(
+        client_type& cs,
+        asio::yield_context yield)
+    {
+        system::error_code ec;
+        http_proto::response_view res =
+            cs.async_handshake(
+                "localhost",
+                "/",
+                yield[ec]);
+        if(ec.failed())
+        {
+            BOOST_TEST_FAIL();
+            return;
+        }
+
+        cs.async_write(
+            buffers::make_buffer("Hello", 5),
+            yield[ec]);
+    }
+
     void
     run()
     {
@@ -35,15 +60,7 @@ struct client_test
             ioc.get_executor(),
             [&](asio::yield_context yield)
             {
-                cs.async_handshake(
-                    "localhost",
-                    "/",
-                    [](system::error_code, http_proto::response_view)
-                    {
-                    },
-                    [](http_proto::request&)
-                    {
-                    });
+                test1(cs, yield);
             },
             [&](std::exception_ptr ex)
             {
