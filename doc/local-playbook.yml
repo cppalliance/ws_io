@@ -10,7 +10,7 @@ content:
   sources:
     - url: ..
       start_path: doc
-      edit_url: 'https://github.com/cppalliance/ws_io/edit/{refname}/{path}'
+      edit_url: 'https://github.com/cppalliance/ws_io/edit/develop/{path}'
 
 ui:
   bundle:
